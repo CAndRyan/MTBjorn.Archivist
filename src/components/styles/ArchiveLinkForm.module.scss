@@ -1,1 +1,14 @@
-﻿
+﻿$buttonHeight: 24px;
+
+.linkForm {
+	width: fit-content;
+
+	.buttonRow {
+		height: $buttonHeight;
+
+		button {
+			height: $buttonHeight;
+			float: right;
+		}
+	}
+}
