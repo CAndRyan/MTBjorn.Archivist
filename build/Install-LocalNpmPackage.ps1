@@ -26,9 +26,13 @@ $fullTarballDirectory = Resolve-Path $TarballDirectory |Select-Object -ExpandPro
 
 [System.IO.Directory]::CreateDirectory($fullTarballDirectory) |Out-Null
 Push-Location $fullTarballDirectory
+Push-Location $fullPackagePath
 
 try {
-    $packJson = & npm pack $fullPackagePath --json
+    & npm run build
+    popd
+
+    $packJson = & npm pack $fullPackagePath --json --ignore-scripts
     $tarballFileName = ($packJson |ConvertFrom-Json).filename
     $tarballPath = Join-Path $fullTarballDirectory $tarballFileName
 

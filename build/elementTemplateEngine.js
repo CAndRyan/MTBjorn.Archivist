@@ -1,6 +1,8 @@
 ﻿// JSX templating adapted from: https://betterprogramming.pub/how-to-use-jsx-without-react-21d23346e5dc
 // Instead of using pragma statements at the top of each file, specify in babel config
 
+// TOOD: move into src & expose either either in ui package or as separate 'build' package
+
 const classAttributePropName = 'className';
 
 const getAttributeName = (propName) => {
@@ -19,7 +21,9 @@ const getElementWithAttributesAndEventHandlers = (tag, props) => {
 		try {
 			const attributeName = getAttributeName(name);
 
-			if (attributeName.startsWith("on") && attributeName.toLowerCase() in window)
+			if (attributeName === 'onBeforeElementRender' || attributeName === 'onAfterElementRender')
+				element[attributeName] = value; // TODO: verify this allows passing event handlers from JSX component to HTML element
+			else if (attributeName.startsWith("on") && attributeName.toLowerCase() in window)
 				element.addEventListener(attributeName.toLowerCase().substr(2), value);
 			else if (value) // Ignore falsey values, the intended equivalence to no attribute (e.g. disabled="false" is still disabled in the DOM)
 				element.setAttribute(attributeName, value.toString());
@@ -33,6 +37,9 @@ const getElementWithAttributesAndEventHandlers = (tag, props) => {
 };
 
 const appendChild = (parent, child) => {
+	if (!child)
+		return;
+
 	if (Array.isArray(child))
 		child.forEach(nestedChild => appendChild(parent, nestedChild));
 	else
@@ -59,6 +66,6 @@ const createElement = (tag, props, ...children) => {
 const createFragment = (props, ...children) => children;
 
 export default {
-	createElement,
+	createElement, // TODO: look into how/if an async JSX pragma can be configured, to accomodate async components -- use lifecycle hooks instead
 	createFragment
 };
