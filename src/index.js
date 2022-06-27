@@ -14,12 +14,13 @@ const getFirestormAuthMethods = () => {
 		driverConfig: firebaseDriverConfig
 	});
 	
-	const { isUserLoggedIn, addAuthStateListener, login } = getActiveFirebaseApp();
+	const { isUserLoggedIn, addAuthStateListener, login, logout } = getActiveFirebaseApp();
 
 	return {
 		isUserLoggedIn,
 		addAuthStateListener,
-		login
+		login,
+		logout
 	};
 };
 
@@ -50,15 +51,21 @@ const getOnAfterLoginHandler = (archiveContainerId) => async () => {
 
 const ArchiveApp = () => { // TODO: hide "Add" form by default
 	const archiveContainerId = uuidv4();
+	const logoutPlaceholderElementId = uuidv4();
 	const onAfterLoginHandler = getOnAfterLoginHandler(archiveContainerId);
-	const { isUserLoggedIn, addAuthStateListener, login } = getFirestormAuthMethods();
+	const { isUserLoggedIn, addAuthStateListener, login, logout } = getFirestormAuthMethods(); // TODO: wire up logout to a button
 
 	const removeAuthStateListener = addAuthStateListener(async (authObj) => {
-		const userIsLoggedIn = await isUserLoggedIn();
-		console.log(authObj);
+		const userIsLoggedIn = authObj && authObj.auth && authObj.auth.currentUser;
 		if (!userIsLoggedIn) return;
 
 		await onAfterLoginHandler();
+
+		const logoutPlaceholderElement = document.getElementById(logoutPlaceholderElementId);
+		logoutPlaceholderElement.replaceWith(<button onClick={(param) => {
+			console.log('testing logout'); // TODO: reset element to login
+			logout();
+		}}>Logout</button>);
 
 		removeAuthStateListener();
 	});
@@ -86,6 +93,7 @@ const ArchiveApp = () => { // TODO: hide "Add" form by default
 				<div id={archiveContainerId} className={styles.archiveContainer}>
 					<LoginComponent onSubmit={loginPostRender} onAfterSuccess={onAfterLoginHandler} />
 				</div>
+				<div id={logoutPlaceholderElementId}></div>
 			</ReactiveComponent>
 		</div>
 	);

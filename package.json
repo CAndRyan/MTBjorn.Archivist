@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.16.7",
-    "@mtbjorn/firestorm": "file:build/local_tarballs/mtbjorn-firestorm-0.0.3.tgz",
+    "@mtbjorn/firestorm": "^0.0.3",
     "@mtbjorn/hypotenuse": "^0.0.6",
     "@mtbjorn/reagent": "^0.0.8",
     "uuid": "^8.3.2"
