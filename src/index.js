@@ -42,30 +42,33 @@ const onPreRenderAfterLoginHandler = (rootElement) => {
     containerElement.replaceWith(archiveContents);
 };
 
-const getOnAfterLoginHandler = (archiveContainerId) => async () => {
+const getOnAfterLoginHandler = (archiveContainerId, logoutPlaceholderElementId, appContainerId, logout) => async () => {
 	const archiveContents = getArchiveContents();
 	const containerElement = document.getElementById(archiveContainerId);
 
     await replaceElement(containerElement, archiveContents);
+
+	const logoutPlaceholderElement = document.getElementById(logoutPlaceholderElementId);
+	const onLogoutClick = async () => {
+		const appContainerElement = document.getElementById(appContainerId);
+		await logout();
+		appContainerElement.replaceWith(<ArchiveApp />);
+	};
+	logoutPlaceholderElement.replaceWith(<button className={styles.logoutButton} onClick={onLogoutClick}>Logout</button>);
 };
 
 const ArchiveApp = () => { // TODO: hide "Add" form by default
+	const appContainerId = uuidv4();
 	const archiveContainerId = uuidv4();
 	const logoutPlaceholderElementId = uuidv4();
-	const onAfterLoginHandler = getOnAfterLoginHandler(archiveContainerId);
 	const { isUserLoggedIn, addAuthStateListener, login, logout } = getFirestormAuthMethods(); // TODO: wire up logout to a button
+	const onAfterLoginHandler = getOnAfterLoginHandler(archiveContainerId, logoutPlaceholderElementId, appContainerId, logout);
 
 	const removeAuthStateListener = addAuthStateListener(async (authObj) => {
 		const userIsLoggedIn = authObj && authObj.auth && authObj.auth.currentUser;
 		if (!userIsLoggedIn) return;
 
 		await onAfterLoginHandler();
-
-		const logoutPlaceholderElement = document.getElementById(logoutPlaceholderElementId);
-		logoutPlaceholderElement.replaceWith(<button onClick={(param) => {
-			console.log('testing logout'); // TODO: reset element to login
-			logout();
-		}}>Logout</button>);
 
 		removeAuthStateListener();
 	});
@@ -86,14 +89,14 @@ const ArchiveApp = () => { // TODO: hide "Add" form by default
 	};
 
 	return (
-		<div className={styles.appContainer}>
+		<div id={appContainerId} className={styles.appContainer}>
 			<h2 className={styles.appTitle}>Archivist</h2>
 
 			<ReactiveComponent onBeforeElementRender={onBeforeElementRender} onAfterElementRender={onAfterElementRender}>
+				<div id={logoutPlaceholderElementId}></div>
 				<div id={archiveContainerId} className={styles.archiveContainer}>
 					<LoginComponent onSubmit={loginPostRender} onAfterSuccess={onAfterLoginHandler} />
 				</div>
-				<div id={logoutPlaceholderElementId}></div>
 			</ReactiveComponent>
 		</div>
 	);
