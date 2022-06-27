@@ -9,13 +9,13 @@
 			}
 		]
 	],
-		"plugins": [
-			"@babel/plugin-transform-runtime",
-			[
-				"babel-plugin-jsx-pragmatic", {
-					"module": "hypotenuse/build",		// Import alias defined in Webpack
-					"import": "elementTemplateEngine"	// NOTE: this plugin works with ES6 default exports
-				}
-			]
+	"plugins": [
+		"@babel/plugin-transform-runtime",
+		[
+			"babel-plugin-jsx-pragmatic", {
+				"module": "hypotenuse/build",		// Import alias defined in Webpack
+				"import": "elementTemplateEngine"	// NOTE: this plugin works with ES6 default exports
+			}
 		]
+	]
 }

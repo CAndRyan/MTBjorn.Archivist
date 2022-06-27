@@ -1,13 +1,18 @@
-﻿import styles from './styles/LinkArchiveEntry';
+﻿import { v4 as uuidv4 } from 'uuid';
+import { writeDataRecord } from '@mtbjorn/firestorm';
+import styles from './styles/LinkArchiveEntry';
+
+const linkArchiveDbPath = 'links';
 
 const saveData = async (archiveEntry) => {
-	// TODO: connect to firestorm
+	await writeDataRecord(archiveEntry, linkArchiveDbPath); // NOTE: id is appended to DB path within method
 };
 
 const getCurrentTimestamp = () => new Date().toUTCString();
 
-const getLinkArchiveEntryFromFormData = (formData, creationTimestamp) => {
+const getLinkArchiveEntryFromFormData = (formData, id, creationTimestamp) => {
 	const archiveEntry = {
+		id,
 		creationTimestamp,
 		lastUpdatedTimestamp: getCurrentTimestamp()
 	};
@@ -22,48 +27,59 @@ const getLinkArchiveEntryFromFormData = (formData, creationTimestamp) => {
 	return archiveEntry;
 };
 
-const getOnFormSubmitHandler = (creationTimestamp = null) => async (event) => {
+const getOnFormSubmitHandler = (id = null, creationTimestamp = null) => async (event) => {
 	const { target } = event;
 	const formData = new FormData(target);
-	const archiveEntry = getLinkArchiveEntryFromFormData(formData, creationTimestamp ?? getCurrentTimestamp());
+	const archiveEntry = getLinkArchiveEntryFromFormData(formData, id ?? uuidv4(), creationTimestamp ?? getCurrentTimestamp());
+	const isNewEntry = !id || !creationTimestamp;
+
+	event.preventDefault();
 
 	try {
 		await saveData(archiveEntry);
-		target.reset();
+
+		if (isNewEntry)
+			target.reset();
+
 		// TODO: display success message
 	} catch (error) {
 		console.error(error);
 		// TODO: display error message
 	}
-
-	event.preventDefault();
+	
 	return false;
 };
 
+// TODO: add yellow highlight and/or "are you sure" prompt when an input has changed or an update is being submitted
+// TODO: reset value after updating an existing entry
 const LinkArchiveEntry = ({ id, url, title, labels, description, creationTimestamp, lastUpdatedTimestamp }) => {
 	const isNewArchiveEntry = !url && !title && !labels && !description;
 	const lastUpdatedElement = lastUpdatedTimestamp ? <span>{`Last Updated: ${lastUpdatedTimestamp}`}</span> : undefined;
 
 	return (
-		<form className={styles.linkForm} onSubmit={getOnFormSubmitHandler(creationTimestamp)} autocomplete="off">
+		<form className={styles.linkForm} onSubmit={getOnFormSubmitHandler(id, creationTimestamp)} autocomplete="off">
 			{lastUpdatedElement}
 			<table>
 				<tbody>
 					<tr>
 						<td>URL</td>
-						<td className={styles.inputColumn}><input type="url" name="url" initialValue={url} required placeholder="e.g. https://mtbjorn.net" /></td>
+						<td className={styles.inputColumn}><input type="url" name="url" value={url} required placeholder="e.g. https://mtbjorn.net" /></td>
 					</tr>
 					<tr>
 						<td>Title</td>
-						<td className={styles.inputColumn}><input type="text" name="title" initialValue={title} required /></td>
+						<td className={styles.inputColumn}><input type="text" name="title" value={title} required /></td>
 					</tr>
 					<tr>
 						<td><label title="A comma-separated list">Labels</label></td>
-						<td className={styles.inputColumn}><input type="text" name="labels" initialValue={labels} required placeholder="e.g. programming, politics" /></td>
+						<td className={styles.inputColumn}><input type="text" name="labels" value={labels} required placeholder="e.g. programming, politics" /></td>
 					</tr>
 					<tr>
 						<td><label title="https://commonmark.org/">Description</label></td>
-						<td className={styles.inputColumn}><textarea name="description" initialValue={description} placeholder="HINT: try CommonMark markdown" /></td>
+						<td className={styles.inputColumn}>
+							<textarea name="description" placeholder="HINT: try CommonMark markdown">
+								{description}
+							</textarea>
+						</td>
 					</tr>
 				</tbody>
 			</table>

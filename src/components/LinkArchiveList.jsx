@@ -1,18 +1,24 @@
-import { v4 as uuidv4 } from 'uuid';
 import { DelayedComponent } from '@mtbjorn/hypotenuse/ui';
+import { readDataRecordList, readDataRecord } from '@mtbjorn/firestorm';
 import LinkArchiveEntry from "./LinkArchiveEntry";
 
+const linkArchiveDbPath = 'links';
+
 const getLinkArchiveData = async () => {
-    // TODO: connect to firestorm
-    return [];
+    const linkArchiveObj = await readDataRecordList(linkArchiveDbPath);
+    if (!linkArchiveObj)
+        return [];
+
+    return Object.values(linkArchiveObj);
 };
 
 const generateChildren = async () => {
     const linkArchiveData = await getLinkArchiveData();
+    const currentTime = new Date().toUTCString();
 
     return ( // TODO: use a JSX fragment, but first update the renderer to accomodate it
         <div>
-            <span>TeStInG</span>
+            <h3>Data (as of: {currentTime})</h3>
             {linkArchiveData.map(({ id, url, title, labels, description, creationTimestamp, lastUpdatedTimestamp }) => (
                 <LinkArchiveEntry
                     id={id}
@@ -28,15 +34,6 @@ const generateChildren = async () => {
     );
 };
 
-const LinkArchiveList = () => {
-    const currentTime = new Date().toUTCString();
-    const listSectionId = uuidv4();
-
-	return (
-		<DelayedComponent id={listSectionId} generateChildren={generateChildren}>
-            <h3>Data (as of: {currentTime})</h3>
-        </DelayedComponent>
-	);
-};
+const LinkArchiveList = () => <DelayedComponent generateChildren={generateChildren} />;
 
 export default LinkArchiveList;
