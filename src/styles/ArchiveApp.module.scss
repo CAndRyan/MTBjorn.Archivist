@@ -11,7 +11,12 @@
         display: block;
     }
 
-    .logoutButton {
+    .logoutStrip {
         float: right;
+
+        span {
+            font-size: small;
+            margin-right: 10px;
+        }
     }
 }

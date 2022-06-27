@@ -42,7 +42,7 @@ const onPreRenderAfterLoginHandler = (rootElement) => {
     containerElement.replaceWith(archiveContents);
 };
 
-const getOnAfterLoginHandler = (archiveContainerId, logoutPlaceholderElementId, appContainerId, logout) => async () => {
+const getOnAfterLoginHandler = (archiveContainerId, logoutPlaceholderElementId, appContainerId, logout) => async ({ email }) => {
 	const archiveContents = getArchiveContents();
 	const containerElement = document.getElementById(archiveContainerId);
 
@@ -54,27 +54,31 @@ const getOnAfterLoginHandler = (archiveContainerId, logoutPlaceholderElementId, 
 		await logout();
 		appContainerElement.replaceWith(<ArchiveApp />);
 	};
-	logoutPlaceholderElement.replaceWith(<button className={styles.logoutButton} onClick={onLogoutClick}>Logout</button>);
+	logoutPlaceholderElement.replaceWith(<div className={styles.logoutStrip}>
+		<span>(U) {email}</span>
+		<button onClick={onLogoutClick}>Logout</button>
+	</div>);
 };
 
 const ArchiveApp = () => { // TODO: hide "Add" form by default
 	const appContainerId = uuidv4();
 	const archiveContainerId = uuidv4();
 	const logoutPlaceholderElementId = uuidv4();
-	const { isUserLoggedIn, addAuthStateListener, login, logout } = getFirestormAuthMethods(); // TODO: wire up logout to a button
+	const { isUserLoggedIn, addAuthStateListener, login, logout } = getFirestormAuthMethods();
 	const onAfterLoginHandler = getOnAfterLoginHandler(archiveContainerId, logoutPlaceholderElementId, appContainerId, logout);
 
 	const removeAuthStateListener = addAuthStateListener(async (authObj) => {
 		const userIsLoggedIn = authObj && authObj.auth && authObj.auth.currentUser;
 		if (!userIsLoggedIn) return;
 
-		await onAfterLoginHandler();
+		await onAfterLoginHandler(authObj.auth.currentUser);
 
 		removeAuthStateListener();
 	});
 
 	const loginPostRender = async ({ email, password }) => {
-		await login(email, password);
+		const user = await login(email, password);
+		return user;
 	};
 
 	const onBeforeElementRender = async (element) => {

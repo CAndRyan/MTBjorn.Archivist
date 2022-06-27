@@ -60,7 +60,7 @@
     "@babel/runtime": "^7.16.7",
     "@mtbjorn/firestorm": "^0.0.3",
     "@mtbjorn/hypotenuse": "^0.0.6",
-    "@mtbjorn/reagent": "^0.0.8",
+    "@mtbjorn/reagent": "^0.0.9",
     "uuid": "^8.3.2"
   }
 }
