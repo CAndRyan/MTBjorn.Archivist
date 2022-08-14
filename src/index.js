@@ -2,6 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { setupActiveFirebaseApp, getActiveFirebaseApp } from '@mtbjorn/firestorm';
 import { replaceElement, ReactiveComponent } from '@mtbjorn/hypotenuse/ui';
 import { LoginComponent } from '@mtbjorn/reagent';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser } from '@fortawesome/free-regular-svg-icons';
 import { archivistLinksFirebaseAppName, archivistLinksFirebaseConfig, firebaseDriverConfig } from './firebaseAppData';
 import LinkArchiveEntry from "./components/LinkArchiveEntry";
 import LinkArchiveList from './components/LinkArchiveList';
@@ -55,7 +57,7 @@ const getOnAfterLoginHandler = (archiveContainerId, logoutPlaceholderElementId, 
 		appContainerElement.replaceWith(<ArchiveApp />);
 	};
 	logoutPlaceholderElement.replaceWith(<div className={styles.logoutStrip}>
-		<span>(U) {email}</span>
+		<span><FontAwesomeIcon icon={faUser} /> {email}</span>
 		<button onClick={onLogoutClick}>Logout</button>
 	</div>);
 };
