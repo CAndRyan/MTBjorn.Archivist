@@ -71,7 +71,7 @@ const LinkArchiveEntry = ({ id, url, title, labels, description, creationTimesta
 			<table>
 				<tbody>
 					<tr>
-						<td title={urlTitleText} onClick={urlOnClick}>URL</td>
+						<td title={urlTitleText} onClick={urlOnClick}>URL:</td>
 						<td className={styles.inputColumn}><input type="url" name="url" value={url} required placeholder="e.g. https://mtbjorn.net" /></td>
 					</tr>
 					<tr>
@@ -79,11 +79,11 @@ const LinkArchiveEntry = ({ id, url, title, labels, description, creationTimesta
 						<td className={styles.inputColumn}><input type="text" name="title" value={title} required /></td>
 					</tr>
 					<tr>
-						<td><label title="A comma-separated list">Labels</label></td>
+						<td><label title="A comma-separated list">Labels:</label></td>
 						<td className={styles.inputColumn}><input type="text" name="labels" value={labels} required placeholder="e.g. programming, politics" /></td>
 					</tr>
 					<tr>
-						<td><label title="https://commonmark.org/">Description</label></td>
+						<td><label title="https://commonmark.org/">Description:</label></td>
 						<td className={styles.inputColumn}>
 							<textarea name="description" placeholder="HINT: try CommonMark markdown">
 								{description}
@@ -94,7 +94,7 @@ const LinkArchiveEntry = ({ id, url, title, labels, description, creationTimesta
 			</table>
 
 			<div className={styles.buttonRow}>
-				<button type="submit">{isNewArchiveEntry ? 'Save' : 'Update'}</button>
+				<button type="submit">{isNewArchiveEntry ? 'Save:' : 'Update:'}</button>
 			</div>
 		</form>
 	);

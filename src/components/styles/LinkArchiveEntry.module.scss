@@ -14,11 +14,11 @@
 			td:first-child {
 				font-weight: bold;
 				text-align: right;
-				width: 90px;
+				width: 80px;
 		
-				&::after {
-					content: ':';
-				}
+				// &::after {
+				// 	content: ':';
+				// }
 			}
 
 			.inputColumn {
