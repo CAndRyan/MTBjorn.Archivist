@@ -55,6 +55,15 @@ const getOnFormSubmitHandler = (id = null, creationTimestamp = null) => async (e
 const LinkArchiveEntry = ({ id, url, title, labels, description, creationTimestamp, lastUpdatedTimestamp }) => {
 	const isNewArchiveEntry = !url && !title && !labels && !description;
 	const lastUpdatedElement = lastUpdatedTimestamp ? <span>{`Last Updated: ${lastUpdatedTimestamp}`}</span> : undefined;
+	const urlTitleText = !url ? '' : 'CTRL + click to open';
+	const urlOnClick = (event) => {
+		event.preventDefault();
+
+		if (event.ctrlKey) {
+			const currentUrlValue = event.target.nextSibling.children[0].value;
+			window.open(currentUrlValue, '_blank');
+		}
+	};
 
 	return (
 		<form className={styles.linkForm} onSubmit={getOnFormSubmitHandler(id, creationTimestamp)} autocomplete="off">
@@ -62,7 +71,7 @@ const LinkArchiveEntry = ({ id, url, title, labels, description, creationTimesta
 			<table>
 				<tbody>
 					<tr>
-						<td>URL</td>
+						<td title={urlTitleText} onClick={urlOnClick}>URL</td>
 						<td className={styles.inputColumn}><input type="url" name="url" value={url} required placeholder="e.g. https://mtbjorn.net" /></td>
 					</tr>
 					<tr>
